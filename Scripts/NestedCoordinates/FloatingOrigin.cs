@@ -14,10 +14,10 @@ namespace NestedCoordinates
             coordinateSystem.camera.gameObject.transform.parent = obj.transform;
         }
 
-        public void UpdatePosition(Vector3 positionDelta)
+        public void UpdatePosition(Vector3 positionDelta, Quaternion transformRotation)
         {
             transform.position += positionDelta;
-            coordinateSystem.UpdateCameraPosition(false, positionDelta);
+            coordinateSystem.UpdateCameraPosition(positionDelta, transformRotation);
         }
 
         void Update()

@@ -20,17 +20,16 @@ namespace NestedCoordinates
             this.inverseScaleFactor = 1.0f / scaleFactor;
         }
 
-        public void UpdateCameraPosition(bool ignoreLayer, Vector3 positionDelta)
+        public void UpdateCameraPosition(Vector3 positionDelta, Quaternion transformRotation)
         {
             if (hasParent)
             {
                 var scaledPositionDelta = positionDelta * inverseScaleFactor;
-                if (!ignoreLayer)
-                {
-                    parentCoordinateSystem.camera.transform.position += scaledPositionDelta;
-                }
+                var cameraTransform = parentCoordinateSystem.camera.transform;
+                cameraTransform.position += scaledPositionDelta;
+                cameraTransform.rotation = transformRotation;
 
-                parentCoordinateSystem.UpdateCameraPosition(false, scaledPositionDelta);
+                parentCoordinateSystem.UpdateCameraPosition(scaledPositionDelta, transformRotation);
             }
         }
         
