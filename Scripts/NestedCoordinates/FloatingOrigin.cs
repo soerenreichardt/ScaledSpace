@@ -11,13 +11,12 @@ namespace NestedCoordinates
         {
             GameObject obj = gameObject;
             this.coordinateSystem = obj.GetComponentInParent<CoordinateSystem>();
-            coordinateSystem.camera.gameObject.transform.parent = obj.transform;
         }
 
         public void UpdatePosition(Vector3 positionDelta, Quaternion transformRotation)
         {
             transform.position += positionDelta;
-            coordinateSystem.UpdateCameraPosition(positionDelta, transformRotation);
+            coordinateSystem.UpdateParentCoordinateSystemCameraPositions(positionDelta, transformRotation);
         }
 
         void Update()

@@ -20,7 +20,7 @@ namespace NestedCoordinates
             this.inverseScaleFactor = 1.0f / scaleFactor;
         }
 
-        public void UpdateCameraPosition(Vector3 positionDelta, Quaternion transformRotation)
+        public void UpdateParentCoordinateSystemCameraPositions(Vector3 positionDelta, Quaternion transformRotation)
         {
             if (hasParent)
             {
@@ -29,7 +29,7 @@ namespace NestedCoordinates
                 cameraTransform.position += scaledPositionDelta;
                 cameraTransform.rotation = transformRotation;
 
-                parentCoordinateSystem.UpdateCameraPosition(scaledPositionDelta, transformRotation);
+                parentCoordinateSystem.UpdateParentCoordinateSystemCameraPositions(scaledPositionDelta, transformRotation);
             }
         }
         

@@ -665,6 +665,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floatingOrigin: {fileID: 963194229}
+  speed: 0.1
+  mouseSensitivity: 0.5
 --- !u!4 &1639928434
 Transform:
   m_ObjectHideFlags: 0

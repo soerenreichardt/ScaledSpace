@@ -13,10 +13,11 @@ namespace NestedCoordinates
         // Update is called once per frame
         void Update()
         {
-            var transformRotation = MouseLook();
+            var transformRotation = Quaternion.identity; //MouseLook();
             var positionDelta = Move(transformRotation);
             transform.rotation = transformRotation;
 
+            // Update the floating origin position and set the player position to that computed value
             floatingOrigin.UpdatePosition(positionDelta, transformRotation);
             transform.position = floatingOrigin.transform.position;
         }
@@ -25,10 +26,9 @@ namespace NestedCoordinates
         {
             var horizontal = Input.GetAxisRaw("Horizontal");
             var vertical = Input.GetAxisRaw("Vertical");
-            var jump = Input.GetAxisRaw("Horizontal");
+            var jump = Input.GetAxisRaw("Jump");
             speed += Input.GetAxis("Mouse ScrollWheel");
-            var positionDelta = transformRotation * new Vector3(horizontal, jump, vertical) * speed;
-            return positionDelta;
+            return transformRotation * new Vector3(horizontal, jump, vertical) * speed;
         }
 
         // implement mouse look that is always up right
