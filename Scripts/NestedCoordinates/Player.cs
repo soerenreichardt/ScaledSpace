@@ -13,7 +13,7 @@ namespace NestedCoordinates
         // Update is called once per frame
         void Update()
         {
-            var transformRotation = Quaternion.identity; //MouseLook();
+            var transformRotation = MouseLook();
             var positionDelta = Move(transformRotation);
             transform.rotation = transformRotation;
 

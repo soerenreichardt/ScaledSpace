@@ -15,14 +15,16 @@ namespace NestedCoordinates
 
         public void UpdatePosition(Vector3 positionDelta, Quaternion transformRotation)
         {
-            transform.position += positionDelta;
+            var transformCache = transform;
+            transformCache.position += positionDelta;
+            transformCache.rotation = transformRotation;
             coordinateSystem.UpdateParentCoordinateSystemCameraPositions(positionDelta, transformRotation);
         }
 
         void Update()
         {
             var transformPosition = this.transform.position;
-            if (transformPosition.magnitude >= 10.0f)
+            if (transformPosition.magnitude >= 100.0f)
             {
                 coordinateSystem.Shift(transformPosition);
                 this.transform.position = Vector3.zero;

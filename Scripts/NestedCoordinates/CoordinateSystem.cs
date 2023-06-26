@@ -6,17 +6,20 @@ namespace NestedCoordinates
     public class CoordinateSystem : MonoBehaviour
     {
 
-        public List<GameObject> gameObjects;
+        public List<SpaceObject> spaceObjects;
         public CoordinateSystem parentCoordinateSystem;
+        public CoordinateSystem childCoordinateSystem;
         public new Camera camera;
         public float scaleFactor = 100.0f;
-        private bool hasParent;
         private float inverseScaleFactor;
-        
+        private bool hasParent;
+        private bool hasChild;
+
         // Start is called before the first frame update
         void Start()
         {
             this.hasParent = parentCoordinateSystem != null;
+            this.hasChild = childCoordinateSystem != null;
             this.inverseScaleFactor = 1.0f / scaleFactor;
         }
 
@@ -35,32 +38,76 @@ namespace NestedCoordinates
         
         public void Shift(Vector3 offset)
         {
-            var remove = new List<GameObject>();
-            foreach (var obj in gameObjects)
+            var remove = new List<SpaceObject>();
+            foreach (var obj in spaceObjects)
             {
-                obj.transform.position -= offset;
-                if (hasParent && obj.transform.position.magnitude >= scaleFactor)
+                // calculate new position
+                var transformCache = obj.transform;
+                var position = transformCache.position;
+                position -= offset;
+                
+                transformCache.position = position;
+                
+                // check if object needs to be transferred to parent or child coordinate system
+                var distanceToObject = position.magnitude;
+                var threshold = obj.LODThresholdForCoordinateSystem(this);
+                if (hasParent && distanceToObject >= threshold)
                 {
-                    parentCoordinateSystem.TransformFromLowerCoordinateSystem(obj);
+                    parentCoordinateSystem.TransformFromChildCoordinateSystem(obj);
                     remove.Add(obj);
                 }
             }
 
             foreach (var toRemove in remove)
             {
-                gameObjects.Remove(toRemove);
+                spaceObjects.Remove(toRemove);
             }
         }
 
-        private void TransformFromLowerCoordinateSystem(GameObject spaceGameObject)
+        void Update()
         {
-            gameObjects.Add(spaceGameObject);
-            spaceGameObject.transform.localScale *= inverseScaleFactor;
-            spaceGameObject.transform.position = spaceGameObject.transform.position * inverseScaleFactor + camera.transform.position;
+            var remove = new List<SpaceObject>();
+            foreach (var obj in spaceObjects)
+            {
+                var distanceToCamera = Vector3.Distance(obj.transform.position, camera.transform.position);
+                var threshold = obj.LODThresholdForCoordinateSystem(this);
+                if (hasChild && distanceToCamera < threshold)
+                {
+                    childCoordinateSystem.TransformFromParentCoordinateSystem(obj);
+                    remove.Add(obj);
+                }
+            }
+            
+            foreach (var toRemove in remove)
+            {
+                spaceObjects.Remove(toRemove);
+            }
+        }
+
+        private void TransformFromChildCoordinateSystem(SpaceObject spaceGameObject)
+        {
+            spaceObjects.Add(spaceGameObject);
+            var transformCache = spaceGameObject.transform;
+            transformCache.localScale *= inverseScaleFactor;
+            spaceGameObject.size *= inverseScaleFactor;
+            transformCache.position = transformCache.position * inverseScaleFactor + camera.transform.position;
             
             var obj = gameObject;
-            spaceGameObject.transform.parent = obj.transform;
-            spaceGameObject.layer = LayerMask.NameToLayer(obj.name);
+            transformCache.parent = obj.transform;
+            spaceGameObject.gameObject.layer = LayerMask.NameToLayer(obj.name);
+        }
+
+        private void TransformFromParentCoordinateSystem(SpaceObject spaceGameObject)
+        {
+            spaceObjects.Add(spaceGameObject);
+            var transformCache = spaceGameObject.transform;
+            transformCache.localScale *= scaleFactor;
+            transformCache.position = (transformCache.position - parentCoordinateSystem.camera.transform.position) * scaleFactor + camera.transform.position;
+            spaceGameObject.size *= scaleFactor;
+
+            var obj = gameObject;
+            transformCache.parent = obj.transform;
+            spaceGameObject.gameObject.layer = LayerMask.NameToLayer(obj.name);
         }
     }
 }
