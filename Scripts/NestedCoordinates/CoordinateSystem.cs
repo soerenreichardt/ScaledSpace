@@ -10,6 +10,7 @@ namespace NestedCoordinates
         public CoordinateSystem parentCoordinateSystem;
         public CoordinateSystem childCoordinateSystem;
         public new Camera camera;
+        public FloatingOrigin cameraFloatingOrigin;
         public float scaleFactor = 100.0f;
         private float inverseScaleFactor;
         private bool hasParent;
@@ -21,6 +22,7 @@ namespace NestedCoordinates
             this.hasParent = parentCoordinateSystem != null;
             this.hasChild = childCoordinateSystem != null;
             this.inverseScaleFactor = 1.0f / scaleFactor;
+            this.cameraFloatingOrigin = camera.GetComponent<FloatingOrigin>();
         }
 
         public void UpdateParentCoordinateSystemCameraPositions(Vector3 positionDelta, Quaternion transformRotation)
@@ -28,10 +30,7 @@ namespace NestedCoordinates
             if (hasParent)
             {
                 var scaledPositionDelta = positionDelta * inverseScaleFactor;
-                var cameraTransform = parentCoordinateSystem.camera.transform;
-                cameraTransform.position += scaledPositionDelta;
-                cameraTransform.rotation = transformRotation;
-
+                parentCoordinateSystem.cameraFloatingOrigin.UpdatePosition(scaledPositionDelta, transformRotation);
                 parentCoordinateSystem.UpdateParentCoordinateSystemCameraPositions(scaledPositionDelta, transformRotation);
             }
         }
