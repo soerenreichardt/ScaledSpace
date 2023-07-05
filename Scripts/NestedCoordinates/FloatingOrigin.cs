@@ -4,7 +4,7 @@ namespace NestedCoordinates
 {
     public class FloatingOrigin : MonoBehaviour
     {
-        private CoordinateSystem coordinateSystem;
+        internal CoordinateSystem coordinateSystem;
         
         // Start is called before the first frame update
         void Start()

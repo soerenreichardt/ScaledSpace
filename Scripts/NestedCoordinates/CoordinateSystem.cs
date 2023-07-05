@@ -6,15 +6,18 @@ namespace NestedCoordinates
     public class CoordinateSystem : MonoBehaviour
     {
 
+        public delegate void ShiftObjectToLowerCoordinateSystemHandler();
+        public event ShiftObjectToLowerCoordinateSystemHandler OnObjectShiftToLowerCoordinateSystem;
+        
         public List<SpaceObject> spaceObjects;
         public CoordinateSystem parentCoordinateSystem;
         public CoordinateSystem childCoordinateSystem;
         public new Camera camera;
         public FloatingOrigin cameraFloatingOrigin;
         public float scaleFactor = 100.0f;
-        private float inverseScaleFactor;
-        private bool hasParent;
-        private bool hasChild;
+        public float inverseScaleFactor;
+        public bool hasParent;
+        public bool hasChild;
 
         // Start is called before the first frame update
         void Start()
@@ -63,6 +66,11 @@ namespace NestedCoordinates
             }
         }
 
+        public bool IsEmpty()
+        {
+            return spaceObjects.Count == 0;
+        }
+
         void Update()
         {
             var remove = new List<SpaceObject>();
@@ -107,6 +115,7 @@ namespace NestedCoordinates
             var obj = gameObject;
             transformCache.parent = obj.transform;
             spaceGameObject.gameObject.layer = LayerMask.NameToLayer(obj.name);
+            OnObjectShiftToLowerCoordinateSystem?.Invoke();
         }
     }
 }
