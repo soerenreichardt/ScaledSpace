@@ -38,8 +38,8 @@ namespace NestedCoordinates
             var horizontal = Input.GetAxisRaw("Horizontal");
             var vertical = Input.GetAxisRaw("Vertical");
             var jump = Input.GetAxisRaw("Jump");
-            speed += Input.GetAxis("Mouse ScrollWheel");
-            return transformRotation * new Vector3(horizontal, jump, vertical) * speed;
+            speed += speed * Input.GetAxis("Mouse ScrollWheel");
+            return transformRotation * new Vector3(horizontal, jump, vertical) * speed * Time.deltaTime;
         }
 
         private Quaternion MouseLook()
