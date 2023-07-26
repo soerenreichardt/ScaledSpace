@@ -68,12 +68,12 @@ namespace NestedCoordinates
             foreach (var obj in spaceObjects)
             {
                 var distanceToCamera = Vector3.Distance(obj.transform.position, camera.transform.position);
-                if (hasParent && distanceToCamera >= cameraFarClipPlane - obj.size)
+                if (hasParent && distanceToCamera >= cameraFarClipPlane - obj.lodThreshold)
                 {
                     parentCoordinateSystem.TransformFromChildCoordinateSystem(obj);
                     remove.Add(obj);
                 } 
-                if (hasChild && distanceToCamera < cameraNearClipPlane + obj.size)
+                if (hasChild && distanceToCamera < cameraNearClipPlane + cameraNearClipPlane + (obj.lodThreshold / 2.0f))
                 {
                     childCoordinateSystem.TransformFromParentCoordinateSystem(obj);
                     remove.Add(obj);
@@ -92,7 +92,7 @@ namespace NestedCoordinates
             var transformCache = spaceGameObject.transform;
             transformCache.localScale *= inverseScaleFactor;
             transformCache.position = (transformCache.position - childCoordinateSystem.camera.transform.position) * inverseScaleFactor + camera.transform.position;
-            spaceGameObject.size *= inverseScaleFactor;
+            spaceGameObject.lodThreshold *= inverseScaleFactor;
 
             var obj = gameObject;
             transformCache.parent = obj.transform;
@@ -105,7 +105,7 @@ namespace NestedCoordinates
             var transformCache = spaceGameObject.transform;
             transformCache.localScale *= scaleFactor;
             transformCache.position = (transformCache.position - parentCoordinateSystem.camera.transform.position) * scaleFactor + camera.transform.position;
-            spaceGameObject.size *= scaleFactor;
+            spaceGameObject.lodThreshold *= scaleFactor;
 
             var obj = gameObject;
             transformCache.parent = obj.transform;

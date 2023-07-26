@@ -24,7 +24,7 @@ namespace NestedCoordinates
         void Update()
         {
             var transformPosition = this.transform.position;
-            if (transformPosition.magnitude >= 100.0f)
+            if (transformPosition.magnitude >= 1000.0f)
             {
                 coordinateSystem.Shift(transformPosition);
                 this.transform.position = Vector3.zero;
