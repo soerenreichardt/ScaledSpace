@@ -10,10 +10,12 @@ namespace NestedCoordinates
         public float mouseSensitivity = 0.1f;
         private Vector2 currentRotation;
         private CoordinateSystem coordinateSystem;
+        private double speedMultiplier;
 
         void Start()
         {
             this.coordinateSystem = floatingOrigin.coordinateSystem;
+            this.speedMultiplier = 1;
         }
 
         // Update is called once per frame
@@ -31,6 +33,11 @@ namespace NestedCoordinates
             {
                 ShiftToParentCoordinateSystem();
             }
+        }
+
+        private void OnGUI()
+        {
+            GUI.Label(new Rect(10, 10, 100, 20), "" + (long) (speed * speedMultiplier) + " m/s");
         }
 
         private Vector3 Move(Quaternion transformRotation)
@@ -60,6 +67,7 @@ namespace NestedCoordinates
                 var parentCoordinateSystem = coordinateSystem.parentCoordinateSystem;
                 coordinateSystem = parentCoordinateSystem;
                 speed *= parentCoordinateSystem.inverseScaleFactor;
+                speedMultiplier *= parentCoordinateSystem.scaleFactor;
                 transform.parent = parentCoordinateSystem.transform;
                 floatingOrigin = parentCoordinateSystem.cameraFloatingOrigin;
             }
@@ -74,6 +82,7 @@ namespace NestedCoordinates
                 var childCoordinateSystem = coordinateSystem.childCoordinateSystem;
                 coordinateSystem = childCoordinateSystem;
                 speed *= childCoordinateSystem.scaleFactor;
+                speedMultiplier *= childCoordinateSystem.inverseScaleFactor;
                 transform.parent = childCoordinateSystem.transform;
                 floatingOrigin = childCoordinateSystem.cameraFloatingOrigin;
             }
